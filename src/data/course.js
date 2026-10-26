@@ -1,7 +1,6 @@
-import { unitA1, unitA2, unitA3, unitA4, unitA5, unitA6 } from "./hangul-units.js";
-import { unitB1, unitB2, unitB3, unitB4, unitB5, unitC1 } from "./life-units.js";
-
-const soon = (id, part, ko, ru, icon) => ({ id, part, title: { ko, ru }, icon, soon: true });
+import { unitA1, unitA2, unitA3, unitA4, unitA5, unitA6, unitA7 } from "./hangul-units.js";
+import { unitB1, unitB2, unitB3, unitB4, unitB5, unitB6, unitB7, unitB8, unitB9, unitC1 } from "./life-units.js";
+import { unitC2, unitC3, unitC4, unitC5 } from "./class-units.js";
 
 export const PARTS = [
   { id: "A", title: { ko: "한글", ru: "Хангыль: буквы и звуки" }, color: "#0F766E", dark: "#0A524C", soft: "#E3F2EE" },
@@ -16,21 +15,21 @@ export const UNITS = [
   unitA4,
   unitA5,
   unitA6,
-  soon("A7", "A", "모음 3", "Гласные 3", "Smile"),
+  unitA7,
   unitB1,
   unitB2,
   unitB3,
   unitB4,
   unitB5,
-  soon("B6", "B", "하루 일과", "Мой день", "Clock"),
-  soon("B7", "B", "우리 동네", "Мой район", "Bus"),
-  soon("B8", "B", "놀이와 운동", "Игры и спорт", "Volleyball"),
-  soon("B9", "B", "급식 시간", "Обед в школе", "Utensils"),
+  unitB6,
+  unitB7,
+  unitB8,
+  unitB9,
   unitC1,
-  soon("C2", "C", "수학 말", "Слова математики", "Calculator"),
-  soon("C3", "C", "촌락과 도시", "Село и город", "Building2"),
-  soon("C4", "C", "과학 낱말", "Слова науки", "Microscope"),
-  soon("C5", "C", "서술형 문제 읽기", "Читаем задачи", "FileText"),
+  unitC2,
+  unitC3,
+  unitC4,
+  unitC5,
 ];
 
 export function unitById(id) {

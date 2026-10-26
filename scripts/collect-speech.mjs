@@ -7,6 +7,7 @@ import { readFileSync, readdirSync, statSync, writeFileSync, mkdirSync } from "n
 import { join } from "node:path";
 import * as hangul from "../src/data/hangul-units.js";
 import * as life from "../src/data/life-units.js";
+import * as lessons from "../src/data/class-units.js";
 
 const HANGUL = /[ᄀ-ᇿ㄰-㆏가-힣]/;
 const ko = new Set();
@@ -22,7 +23,7 @@ function walk(node, key) {
   if (node && typeof node === "object") for (const [k, v] of Object.entries(node)) walk(v, k);
 }
 
-for (const unit of [...Object.values(hangul), ...Object.values(life)]) {
+for (const unit of [...Object.values(hangul), ...Object.values(life), ...Object.values(lessons)]) {
   walk(unit);
   for (const step of unit.steps || []) {
     // Intro steps are read aloud as one paragraph.

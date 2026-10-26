@@ -469,3 +469,103 @@ export const unitA6 = {
     { ko: "산", ru: "гора", icon: "Mountain" },
   ],
 };
+
+export const unitA7 = {
+  id: "A7",
+  part: "A",
+  title: { ko: "모음 3", ru: "Гласные 3" },
+  icon: "Smile",
+  goal: { ru: "ㅘ ㅝ ㅚ ㅟ ㅢ: две гласные в одной", ko: "두 모음이 합쳐진 모음을 배워요" },
+  steps: [
+    {
+      type: "intro",
+      title: { ru: "Две гласные складываются в одну", ko: "모음 두 개가 하나가 돼요" },
+      blocks: [
+        { ru: "ㅗ + ㅏ = ㅘ «ва». ㅜ + ㅓ = ㅝ «во». Губы сначала круглые, потом открываются.", ko: "ㅗ와 ㅏ를 합치면 ㅘ, ㅜ와 ㅓ를 합치면 ㅝ예요." },
+        { ru: "ㅗ + ㅣ = ㅚ «вэ». ㅜ + ㅣ = ㅟ «ви».", ko: "" },
+        { ru: "ㅡ + ㅣ = ㅢ. Быстро скажи «ы» и «и» вместе.", ko: "ㅡ와 ㅣ를 합치면 ㅢ예요." },
+        { ru: "ㅙ и ㅞ звучат почти как ㅚ, тоже «вэ». Их различаем только в написании.", ko: "ㅙ, ㅞ, ㅚ는 소리가 거의 같아요." },
+      ],
+      show: ["와", "워", "외", "위", "의"],
+    },
+    {
+      type: "learn",
+      jamo: true,
+      items: [
+        { ko: "와", glyph: "ㅘ", ru: "ㅗ + ㅏ. Как «ва»." },
+        { ko: "워", glyph: "ㅝ", ru: "ㅜ + ㅓ. Как «во», губы не круглые в конце." },
+        { ko: "외", glyph: "ㅚ", ru: "ㅗ + ㅣ. Как «вэ»." },
+        { ko: "위", glyph: "ㅟ", ru: "ㅜ + ㅣ. Как «ви»." },
+        { ko: "의", glyph: "ㅢ", ru: "ㅡ + ㅣ. «ы» и «и» быстро вместе." },
+        { ko: "왜", glyph: "ㅙ", ru: "ㅗ + ㅐ. Тоже «вэ»." },
+      ],
+    },
+    {
+      type: "listen",
+      title: { ru: "Какой слог?", ko: "어떤 글자예요?" },
+      q: [
+        { say: "와", options: ["와", "워"] },
+        { say: "위", options: ["외", "위"] },
+        { say: "의", options: ["의", "이"] },
+        { say: "워", options: ["와", "워"] },
+        { say: "과", options: ["고", "과"] },
+        { say: "쉬", options: ["시", "쉬"] },
+      ],
+    },
+    {
+      type: "build",
+      title: { ru: "Собери слог", ko: "글자를 만들어요" },
+      cho: ["ㅇ", "ㄱ", "ㅅ", "ㅎ", "ㄷ"],
+      jung: ["ㅘ", "ㅝ", "ㅚ", "ㅟ", "ㅢ", "ㅙ"],
+      q: ["와", "과", "위", "회", "의", "돼"],
+    },
+    {
+      type: "learn",
+      title: { ru: "Новые слова", ko: "새 낱말" },
+      items: [
+        { ko: "사과", ru: "яблоко", icon: "Apple" },
+        { ko: "가위", ru: "ножницы", icon: "Scissors" },
+        { ko: "의자", ru: "стул", icon: "Armchair" },
+        { ko: "돼지", ru: "свинья", icon: "PiggyBank" },
+        { ko: "귀", ru: "ухо", icon: "Ear" },
+        { ko: "왜?", ru: "почему?", icon: "CircleHelp" },
+      ],
+    },
+    {
+      type: "listen",
+      title: { ru: "Послушай и выбери картинку", ko: "듣고 그림을 고르세요" },
+      pictures: true,
+      q: [
+        { say: "의자", options: [{ ko: "의자", icon: "Armchair" }, { ko: "귀", icon: "Ear" }, { ko: "사과", icon: "Apple" }] },
+        { say: "가위", options: [{ ko: "돼지", icon: "PiggyBank" }, { ko: "가위", icon: "Scissors" }, { ko: "의자", icon: "Armchair" }] },
+        { say: "돼지", options: [{ ko: "사과", icon: "Apple" }, { ko: "귀", icon: "Ear" }, { ko: "돼지", icon: "PiggyBank" }] },
+        { say: "귀", options: [{ ko: "귀", icon: "Ear" }, { ko: "가위", icon: "Scissors" }, { ko: "돼지", icon: "PiggyBank" }] },
+      ],
+    },
+    {
+      type: "read",
+      title: { ru: "Как правильно написать?", ko: "맞게 쓴 것을 고르세요" },
+      sayFirst: true,
+      q: [
+        { ko: "사과", ru: "яблоко", options: ["사고", "사과", "서과"], answer: 1, spelling: true },
+        { ko: "가위", ru: "ножницы", options: ["가이", "가우", "가위"], answer: 2, spelling: true },
+        { ko: "의자", ru: "стул", options: ["의자", "이자", "으자"], answer: 0, spelling: true },
+        { ko: "돼지", ru: "свинья", options: ["대지", "돼지", "도지"], answer: 1, spelling: true },
+      ],
+    },
+    { type: "speak", items: [{ ko: "와" }, { ko: "워" }, { ko: "위" }, { ko: "의" }, { ko: "사과", ru: "яблоко" }, { ko: "의자", ru: "стул" }, { ko: "가위", ru: "ножницы" }] },
+    { type: "trace", jamo: ["ㅘ", "ㅝ", "ㅚ", "ㅟ", "ㅢ"] },
+  ],
+  words: [
+    { ko: "사과", ru: "яблоко", icon: "Apple" },
+    { ko: "가위", ru: "ножницы", icon: "Scissors" },
+    { ko: "의자", ru: "стул", icon: "Armchair" },
+    { ko: "돼지", ru: "свинья", icon: "PiggyBank" },
+    { ko: "귀", ru: "ухо", icon: "Ear" },
+    { ko: "왜?", ru: "почему?", icon: "CircleHelp" },
+  ],
+  faq: [
+    { keys: ["ㅢ", "의"], ru: "ㅢ в начале слова читается «ый» быстро: 의자. В середине слова часто звучит как «и», а «의» в значении «чей» — как «э». Пока запомни 의자 — стул." },
+    { keys: ["ㅙ", "ㅞ", "ㅚ", "왜", "외"], ru: "ㅙ, ㅞ и ㅚ сейчас звучат почти одинаково, как «вэ». Какую букву писать, просто запоминаем вместе со словом: 돼지, 왜, 회사." },
+  ],
+};
