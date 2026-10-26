@@ -15,9 +15,7 @@ import hashlib
 import json
 import os
 import re
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -99,12 +97,8 @@ def main():
         audio = np.concatenate(chunks[:-1]) if chunks else np.zeros(1, dtype=np.float32)
         peak = float(np.max(np.abs(audio))) or 1.0
         audio = audio * (0.89 / peak)
-        with tempfile.NamedTemporaryFile(suffix=".wav") as tmp:
-            sf.write(tmp.name, audio, sr)
-            subprocess.run(
-                ["ffmpeg", "-loglevel", "error", "-y", "-i", tmp.name, "-ac", "1", "-ar", "24000", "-b:a", "48k", str(path)],
-                check=True,
-            )
+        # libsndfile (bundled with soundfile) writes MP3 directly; no ffmpeg needed.
+        sf.write(str(path), audio, sr, format="MP3", bitrate_mode="VARIABLE", compression_level=0.75)
 
     manifest = {"ko": {}, "koSlow": {}, "ru": {}, "voices": {"ko": KO_VOICE, "ru": RU_VOICE}, "engine": "Supertonic 3"}
     jobs = [("ko", t) for t in lines["ko"]] + [("koSlow", t) for t in lines["ko"]] + [("ru", t) for t in lines["ru"]]
