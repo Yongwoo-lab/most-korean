@@ -41,6 +41,8 @@ jobs:
           restore-keys: audio-
       - run: pip install -r scripts/requirements-audio.txt
       - run: python scripts/make-audio.py --samples
+        # Without recordings the app still works with the device voice.
+        continue-on-error: true
         env:
           KO_VOICE: F1
           RU_VOICE: F2

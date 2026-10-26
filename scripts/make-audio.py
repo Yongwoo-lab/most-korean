@@ -80,6 +80,7 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     tts = TTS(auto_download=True)
     sr = tts.sample_rate
+    print(f"::notice title=make-audio::voices {sorted(tts.voice_style_names)}, sample rate {sr}")
     styles = {}
 
     def style(name):
@@ -143,4 +144,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:  # show the reason in the GitHub Actions summary
+        import traceback
+
+        tb = traceback.format_exc().strip().splitlines()
+        print(f"::error title=make-audio::{type(e).__name__}: {e} | " + " / ".join(tb[-6:]).replace("\n", " "))
+        raise
