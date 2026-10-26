@@ -5,6 +5,7 @@ import { Icon, Meaning, MiniSpeaker, Mascot, PicTile, Speaker, T, shuffled, useP
 import { say } from "../lib/speech.js";
 import { compose } from "../lib/hangul.js";
 import { logEvent } from "../lib/store.js";
+import { sfx } from "../lib/sfx.js";
 
 const PRAISE = [
   ["Молодец!", "잘했어요!"],
@@ -26,9 +27,11 @@ export function useQuiz(total, { onScore, onReady, unitId, kind }) {
     logEvent(unitId, kind, ok, detail);
     if (!ok) {
       missed.current = true;
+      sfx.miss();
       setState("miss");
       return;
     }
+    sfx.good();
     if (!missed.current) first.current++;
     setState("good");
     timer.current = setTimeout(() => {
@@ -57,16 +60,20 @@ export function Progress({ i, total }) {
 export function Feedback({ state, praise, missText }) {
   if (state === "good")
     return (
-      <div className="feedback good fade-in" role="status">
-        <Mascot size={48} mood="wow" />
-        <T ru={praise[0]} ko={praise[1]} />
+      <div className="feedback good" role="status">
+        <Mascot size={52} mood="wow" />
+        <b className="feedback-text">
+          <T ru={praise[0]} ko={praise[1]} />
+        </b>
       </div>
     );
   if (state === "miss")
     return (
-      <div className="feedback try fade-in" role="status">
-        <Mascot size={48} mood="think" />
-        <T ru={missText?.[0] || "Почти! Попробуй ещё раз."} ko={missText?.[1] || "다시 해 볼까요?"} />
+      <div className="feedback try" role="status">
+        <Mascot size={52} mood="think" />
+        <b className="feedback-text">
+          <T ru={missText?.[0] || "Почти! Попробуй ещё раз."} ko={missText?.[1] || "다시 해 볼까요?"} />
+        </b>
       </div>
     );
   return <div style={{ minHeight: 76 }} aria-hidden="true" />;
@@ -74,9 +81,11 @@ export function Feedback({ state, praise, missText }) {
 
 export function DoneNote() {
   return (
-    <div className="feedback good fade-in" role="status">
-      <Mascot size={48} mood="wow" />
-      <T ru="Готово! Нажми «Дальше»." ko="다 했어요! '다음'을 누르세요." />
+    <div className="feedback good" role="status">
+      <Mascot size={52} mood="wow" />
+      <b className="feedback-text">
+        <T ru="Готово! Нажми «Дальше»." ko="다 했어요! '다음'을 누르세요." />
+      </b>
     </div>
   );
 }
@@ -135,7 +144,7 @@ export function Listen({ step, unitId, onScore, onReady }) {
                     <span className="ko">{o}</span>
                   ) : (
                     <>
-                      <PicTile icon={o.icon} size={92} />
+                      <PicTile icon={o.icon} ko={o.ko} size={92} />
                       {o.label && p?.help !== "none" ? <span className="ru muted">{o.label}</span> : null}
                       {p?.help === "none" || quiz.state === "good" ? <span className="ko" style={{ fontSize: 22 }}>{o.ko}</span> : null}
                     </>
@@ -454,7 +463,7 @@ export function Task({ step, unitId, onScore, onReady }) {
                   const good = quiz.state === "good" && o.id === cur.answer;
                   return (
                     <button key={o.id} type="button" className={"opt pic" + (picked === o.id && quiz.state === "miss" ? " miss" : "")} onClick={() => pick(o.id, o.id === cur.answer)} style={{ position: "relative" }}>
-                      <PicTile icon={o.icon} size={96} tone="amber" />
+                      <PicTile icon={o.icon} ko={o.ko} size={96} tone="amber" />
                       <span className="ko" style={{ fontSize: 22 }}>{o.ko}</span>
                       {good && (
                         <svg viewBox="0 0 100 100" style={{ position: "absolute", inset: -6, width: "calc(100% + 12px)", height: "calc(100% + 12px)" }} aria-hidden="true">

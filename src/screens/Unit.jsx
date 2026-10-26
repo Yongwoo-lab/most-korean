@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { unitById, UNITS, isOpen } from "../data/course.js";
-import { Icon, Mascot, Stars, T, useProfile } from "../components/ui.jsx";
+import { Icon, Mascot, Pic, Stars, T, useProfile } from "../components/ui.jsx";
+import { UI_PIC } from "../data/pictures.js";
+import { sfx } from "../lib/sfx.js";
 import { Intro, Learn, Scene } from "../activities/basic.jsx";
 import { Build, Choose, Grammar, Listen, Read, Task } from "../activities/quiz.jsx";
 import { Order, Speak, Trace } from "../activities/produce.jsx";
@@ -13,19 +15,39 @@ const DEBUG = typeof location !== "undefined" && location.search.includes("debug
 const VIEWS = { intro: Intro, learn: Learn, scene: Scene, listen: Listen, read: Read, choose: Choose, grammar: Grammar, build: Build, task: Task, speak: Speak, order: Order, trace: Trace };
 
 const STEP_NAME = {
-  intro: ["Знакомство", "알아보기"],
-  scene: ["Послушай", "만나기"],
-  learn: ["Учим", "배우기"],
-  listen: ["Слушаем", "듣기"],
-  read: ["Читаем", "읽기"],
-  choose: ["Говорим", "말하기"],
-  grammar: ["Правило", "규칙"],
-  build: ["Собираем", "만들기"],
-  task: ["Задание", "문제"],
-  speak: ["Говорим", "말하기"],
-  order: ["Пишем", "쓰기"],
-  trace: ["Пишем", "쓰기"],
+  intro: ["Знакомство", "알아보기", "Sparkles"],
+  scene: ["Послушай", "만나기", "MessagesSquare"],
+  learn: ["Учим", "배우기", "BookOpen"],
+  listen: ["Слушаем", "듣기", "Ear"],
+  read: ["Читаем", "읽기", "BookOpen"],
+  choose: ["Говорим", "말하기", "MessageCircle"],
+  grammar: ["Правило", "규칙", "Lightbulb"],
+  build: ["Собираем", "만들기", "Blocks"],
+  task: ["Задание", "문제", "ClipboardList"],
+  speak: ["Говорим", "말하기", "Mic"],
+  order: ["Пишем", "쓰기", "PencilLine"],
+  trace: ["Пишем", "쓰기", "PencilLine"],
 };
+
+function Confetti() {
+  const colors = ["#FFC93C", "#FF6A45", "#18A898", "#4457A0", "#3FCF8E", "#FF8FB1"];
+  return (
+    <div className="confetti" aria-hidden="true">
+      {Array.from({ length: 36 }, (_, k) => (
+        <span
+          key={k}
+          style={{
+            left: `${(k * 37) % 100}%`,
+            background: colors[k % colors.length],
+            animationDelay: `${(k % 9) * 0.09}s`,
+            animationDuration: `${1.6 + (k % 5) * 0.25}s`,
+            transform: `rotate(${k * 29}deg)`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 export function HelpSwitch() {
   const p = useProfile();
@@ -67,17 +89,25 @@ function Done({ unit, stars, go }) {
   const idx = UNITS.indexOf(unit);
   const after = UNITS.slice(idx + 1).find((u) => !u.soon && u.part === unit.part) || UNITS.find((u) => !u.soon && isOpen(u, p) && !p.units?.[u.id]?.done);
   useEffect(() => {
-    sayAll([["Ура! Урок пройден!", "ru"], ["잘했어요!", "ko"]]);
+    sfx.done();
+    const t = setTimeout(() => sayAll([["Ура! Урок пройден!", "ru"], ["잘했어요!", "ko"]]), 700);
+    return () => clearTimeout(t);
   }, []);
   return (
-    <div className="col fade-in" style={{ gap: 22, alignItems: "center", textAlign: "center", paddingTop: 12 }}>
-      <Mascot size={120} mood="wow" />
-      <div className="big-stars">
-        <Stars n={stars} size={64} />
+    <div className="done col" style={{ gap: 20, alignItems: "center", textAlign: "center", paddingTop: 8 }}>
+      <Confetti />
+      <div className="done-art">
+        <Pic pic={UI_PIC.trophy} size={120} className="done-trophy" />
+        <span className="done-mascot">
+          <Mascot size={88} mood="wow" />
+        </span>
       </div>
-      <h2 className="act-title">
+      <h2 className="act-title" style={{ fontSize: 36 }}>
         <T ru="Урок пройден!" ko="잘했어요!" />
       </h2>
+      <div className="big-stars">
+        <Stars n={stars} size={60} />
+      </div>
       {unit.words?.length > 0 && (
         <div className="card col" style={{ padding: 20, gap: 12, width: "100%", maxWidth: 640 }}>
           <div className="ru" style={{ fontWeight: 700 }}>
@@ -165,16 +195,18 @@ export default function Unit({ id, go }) {
         <button type="button" className="icon-btn" onClick={() => go("home")} aria-label="На карту">
           <Icon name="X" />
         </button>
-        <div className="col" style={{ gap: 0 }}>
-          <span className="t-sub ru">{finished ? "" : STEP_NAME[step?.type]?.[0]}</span>
+        <div className="col" style={{ gap: 2 }}>
+          {!finished && STEP_NAME[step?.type] && (
+            <span className="step-chip ru">
+              <Icon name={STEP_NAME[step.type][2]} size={14} /> {STEP_NAME[step.type][0]}
+            </span>
+          )}
           <b className="ko" style={{ fontSize: 22, lineHeight: 1.1 }}>
             {unit.id} · {unit.title.ko}
           </b>
         </div>
-        <div className="dots" aria-label={`Шаг ${i + 1} из ${steps.length}`}>
-          {steps.map((_, k) => (
-            <span key={k} className={"dot" + (finished || k < i ? " done" : k === i ? " now" : "")} />
-          ))}
+        <div className="runner-progress" role="progressbar" aria-label="Шаги урока" aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={finished ? steps.length : i}>
+          <span style={{ width: `${finished ? 100 : Math.max(4, (i / steps.length) * 100)}%` }} />
         </div>
         <SoundSwitch />
         <HelpSwitch />

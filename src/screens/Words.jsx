@@ -47,7 +47,7 @@ export default function Words({ go }) {
                 }}
               >
                 <div className="row" style={{ gap: 12 }}>
-                  {w.icon && <PicTile icon={w.icon} size={52} />}
+                  {w.icon && <PicTile icon={w.icon} ko={ko} size={56} />}
                   <span className="ko">{ko}</span>
                 </div>
                 <span className="ru muted" style={{ minHeight: 24 }}>

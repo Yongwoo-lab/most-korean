@@ -13,6 +13,21 @@
 
 커리큘럼 근거와 단원 계획은 [CURRICULUM.md](CURRICULUM.md)에 있습니다.
 
+## 사용한 오픈소스
+| 무엇 | 어디에 | 라이선스 |
+|---|---|---|
+| [Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (Microsoft) | 단어 그림, 지도, 아바타, 미시카 | MIT |
+| [es-hangul](https://github.com/toss/es-hangul) (Toss) | 말하기 단계의 "읽는 소리" 표시 (표준 발음 변환) | MIT |
+| [Transformers.js](https://github.com/huggingface/transformers.js) + Whisper base | 브라우저 안 발음 인식 | Apache-2.0 / MIT |
+| Gemma 3 1B, Qwen2.5 0.5B | 미시카 AI 선생님 | Gemma 약관 / Apache-2.0 |
+| [lucide](https://lucide.dev) | 버튼 아이콘 | ISC |
+| Jua, Noto Sans KR, Nunito (Google Fonts) | 글꼴 | OFL |
+
+검토했지만 아직 넣지 않은 것: Supertonic 3(한국어·러시아어 음성 합성, 기기 음성이 없는 태블릿 대비),
+Tatoeba 한국어·러시아어 예문(CC BY 2.0 FR, 예문 늘릴 때), 국립국어원 한국어기초사전(러시아어 뜻 검토용).
+
+`npm run assets`는 코드에 쓴 아이콘과 그림만 골라 `src/components/icons.js`와 `public/pics/`를 다시 만듭니다.
+
 ## 실행
 ```
 npm install

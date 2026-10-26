@@ -4,9 +4,9 @@ import { unitB1, unitB2, unitB3, unitB4, unitB5, unitC1 } from "./life-units.js"
 const soon = (id, part, ko, ru, icon) => ({ id, part, title: { ko, ru }, icon, soon: true });
 
 export const PARTS = [
-  { id: "A", title: { ko: "한글", ru: "Хангыль: буквы и звуки" }, color: "#0F766E", soft: "#E3F2EE" },
-  { id: "B", title: { ko: "생활 한국어", ru: "Корейский для школьной жизни" }, color: "#C2410C", soft: "#FFF1E6" },
-  { id: "C", title: { ko: "수업 한국어", ru: "Корейский для уроков" }, color: "#3B4A7A", soft: "#E8ECF7" },
+  { id: "A", title: { ko: "한글", ru: "Хангыль: буквы и звуки" }, color: "#0F766E", dark: "#0A524C", soft: "#E3F2EE" },
+  { id: "B", title: { ko: "생활 한국어", ru: "Корейский для школьной жизни" }, color: "#D9541E", dark: "#9A3412", soft: "#FFF1E6" },
+  { id: "C", title: { ko: "수업 한국어", ru: "Корейский для уроков" }, color: "#4457A0", dark: "#2B3A72", soft: "#E8ECF7" },
 ];
 
 export const UNITS = [

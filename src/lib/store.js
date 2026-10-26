@@ -49,6 +49,8 @@ export const AVATARS = [
   { id: "bird", color: "#BBF7D0" },
   { id: "fish", color: "#C7D2FE" },
   { id: "turtle", color: "#FED7AA" },
+  { id: "fox", color: "#FFE4D2" },
+  { id: "bear", color: "#F6E3CF" },
 ];
 
 export function newProfile(name, avatar) {

@@ -5,7 +5,7 @@ import { Icon, Meaning, Mascot, MiniSpeaker, Speaker, T, shuffled, useProfile } 
 import { DoneNote, Feedback, Progress, useQuiz } from "./quiz.jsx";
 import { say } from "../lib/speech.js";
 import { micSupported, startRecording, toMono16k } from "../lib/recorder.js";
-import { diffSyllables, normalize, similarity } from "../lib/hangul.js";
+import { diffSyllables, normalize, similarity, pronounce } from "../lib/hangul.js";
 import { transcribe, useMlStatus, progressOf } from "../lib/ml.js";
 import { logEvent } from "../lib/store.js";
 import { STROKES } from "../data/strokes.js";
@@ -111,6 +111,11 @@ export function Speak({ step, unitId, onReady }) {
               ))
             : cur.ko}
         </div>
+        {pronounce(cur.ko) !== cur.ko.replace(/[?.!,~]/g, "").trim() && (
+          <div className="pron" title="Так произносится · 이렇게 소리 나요">
+            <span className="ru">читается</span> <span className="ko">[{pronounce(cur.ko)}]</span>
+          </div>
+        )}
         <Meaning ru={cur.ru} />
         <div className="row" style={{ gap: 14 }}>
           <Speaker key={i} text={cur.ko} size={72} autoPlay label="Слушать образец" />

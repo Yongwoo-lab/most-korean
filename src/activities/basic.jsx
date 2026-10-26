@@ -1,6 +1,6 @@
 // Activities that introduce: a short explanation, word cards and a dialog.
 import { useEffect, useState } from "react";
-import { Icon, Meaning, MiniSpeaker, Mascot, PicTile, Speaker, T, useProfile, useReadAloud } from "../components/ui.jsx";
+import { Icon, Meaning, MiniSpeaker, Mascot, Pic, PicTile, Speaker, T, useProfile, useReadAloud } from "../components/ui.jsx";
 import { say, sayAll } from "../lib/speech.js";
 
 export function Intro({ step, onReady }) {
@@ -74,7 +74,7 @@ export function Learn({ step, onReady, onWords }) {
               </div>
             ) : (
               <div className="row" style={{ gap: 14 }}>
-                {it.icon && <PicTile icon={it.icon} size={60} />}
+                {it.icon && <PicTile icon={it.icon} ko={it.ko} size={64} />}
                 <span className="ko">{it.ko}</span>
               </div>
             )}
@@ -91,10 +91,10 @@ export function Learn({ step, onReady, onWords }) {
 }
 
 const PEOPLE = {
-  teacher: { icon: "GraduationCap", bg: "#E8ECF7", fg: "#3B4A7A", ru: "Учитель", ko: "선생님" },
-  nurse: { icon: "Stethoscope", bg: "#E3F2EE", fg: "#0B5A54", ru: "Медсестра", ko: "보건 선생님" },
-  friend: { icon: "Smile", bg: "#FDE68A", fg: "#1F2A44", ru: "Одноклассник", ko: "친구" },
-  kid: { icon: "User", bg: "#BAE6FD", fg: "#1F2A44", ru: "Ученик", ko: "나" },
+  teacher: { icon: "GraduationCap", pic: "woman-teacher", bg: "#E8ECF7", fg: "#3B4A7A", ru: "Учитель", ko: "선생님" },
+  nurse: { icon: "Stethoscope", pic: "health-worker", bg: "#E3F2EE", fg: "#0B5A54", ru: "Медсестра", ko: "보건 선생님" },
+  friend: { icon: "Smile", pic: "boy", bg: "#FDE68A", fg: "#1F2A44", ru: "Одноклассник", ko: "친구" },
+  kid: { icon: "User", pic: "girl", bg: "#BAE6FD", fg: "#1F2A44", ru: "Ученик", ko: "나" },
 };
 
 export function Scene({ step, onReady }) {
@@ -129,7 +129,7 @@ export function Scene({ step, onReady }) {
           return (
             <div key={i} className={"scene-line" + (l.who === "kid" ? " right" : "")}>
               <span className="who" style={{ background: who.bg, color: who.fg }} title={who.ru}>
-                <Icon name={who.icon} size={26} />
+                {who.pic ? <Pic pic={who.pic} size={40} /> : <Icon name={who.icon} size={26} />}
               </span>
               <button type="button" className={"scene-bubble" + (active === i ? " active" : "")} onClick={() => (setActive(i), say(l.ko).then(() => setActive(-1)))}>
                 <div className="ko">{l.ko}</div>

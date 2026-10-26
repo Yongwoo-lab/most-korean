@@ -1,3 +1,4 @@
+import { standardizePronunciation } from "es-hangul";
 // Hangul helpers: build syllables from jamo, split them back, and compare
 // what a child said with the target sentence.
 
@@ -105,4 +106,18 @@ export function diffSyllables(target, said) {
 // 받침 rule for 이에요/예요, 을/를 and friends.
 export function josa(word, withBatchim, without) {
   return word + (hasBatchim(word) ? withBatchim : without);
+}
+
+// How a phrase is actually pronounced (표준 발음), e.g. 화장실에 → [화장시레].
+// es-hangul (Toss, MIT) applies the standard rules; it over-applies 경음화
+// in a few compounds, so those are corrected by hand.
+const PRON_FIX = { 반가워요: "반가워요", 감사합니다: "감사함니다", "보건실 어디예요": "보건실 어디예요", "보건실에 가고 싶어요": "보건시레 가고 시퍼요" };
+export function pronounce(text) {
+  const clean = text.replace(/[?.!,~]/g, "").trim();
+  if (PRON_FIX[clean]) return PRON_FIX[clean];
+  try {
+    return standardizePronunciation(clean);
+  } catch {
+    return clean;
+  }
 }

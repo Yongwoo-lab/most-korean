@@ -6,15 +6,18 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview --host"
+    "preview": "vite preview --host",
+    "assets": "node scripts/gen-assets.mjs"
   },
   "dependencies": {
     "@huggingface/transformers": "^4.3.1",
+    "es-hangul": "^2.4.0",
     "lucide-react": "^1.61.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
+    "@iconify-json/fluent-emoji": "^1.2.7",
     "@vitejs/plugin-react": "^6.1.2",
     "vite": "^8.3.5"
   }

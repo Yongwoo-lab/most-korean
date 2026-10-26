@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ICONS } from "./icons.js";
+import { AVATAR_PIC, ICON_PIC, UI_PIC, WORD_PIC } from "../data/pictures.js";
 import { say, sayAll, stop } from "../lib/speech.js";
 import { currentProfile, useStore } from "../lib/store.js";
 
@@ -8,33 +9,23 @@ export function Icon({ name, size = 24, ...rest }) {
   return <C size={size} strokeWidth={2} aria-hidden="true" {...rest} />;
 }
 
+// A colour picture from public/pics (Fluent Emoji). Decorative by default.
+export function Pic({ pic, size = 48, alt = "", className = "", style }) {
+  return <img className={"pic " + className} src={`pics/${pic}.svg`} width={size} height={size} alt={alt} aria-hidden={alt ? undefined : true} draggable="false" style={style} />;
+}
+
+export function picFor(ko, icon) {
+  return WORD_PIC[ko] || ICON_PIC[icon] || null;
+}
+
+// Мишка, the bear who guides the child. A small badge shows the mood.
 export function Mascot({ size = 72, mood = "happy" }) {
+  const badge = mood === "wow" ? UI_PIC.sparkles : mood === "think" ? UI_PIC.think : null;
   return (
-    <svg width={size} height={size} viewBox="0 0 72 72" role="img" aria-label="Мишка">
-      <circle cx="18" cy="18" r="11" fill="#B7794A" />
-      <circle cx="54" cy="18" r="11" fill="#B7794A" />
-      <circle cx="18" cy="18" r="5" fill="#E7B48A" />
-      <circle cx="54" cy="18" r="5" fill="#E7B48A" />
-      <circle cx="36" cy="40" r="28" fill="#C98B5A" />
-      <ellipse cx="36" cy="50" rx="14" ry="11" fill="#F3D9B8" />
-      {mood === "think" ? (
-        <>
-          <path d="M22 36h8M42 36h8" stroke="#1F2A44" strokeWidth="3" strokeLinecap="round" />
-          <circle cx="40" cy="55" r="2.6" fill="#1F2A44" />
-        </>
-      ) : (
-        <>
-          <circle cx="26" cy="36" r="4" fill="#1F2A44" />
-          <circle cx="46" cy="36" r="4" fill="#1F2A44" />
-          <circle cx="27.3" cy="34.6" r="1.3" fill="#fff" />
-          <circle cx="47.3" cy="34.6" r="1.3" fill="#fff" />
-          <path d={mood === "wow" ? "M31 53 Q36 60 41 53 Z" : "M31 53 Q36 57 41 53"} stroke="#1F2A44" strokeWidth="2.2" fill={mood === "wow" ? "#1F2A44" : "none"} strokeLinecap="round" />
-        </>
-      )}
-      <ellipse cx="36" cy="46" rx="4.5" ry="3.2" fill="#1F2A44" />
-      <circle cx="19" cy="47" r="4" fill="#F59E8B" opacity="0.5" />
-      <circle cx="53" cy="47" r="4" fill="#F59E8B" opacity="0.5" />
-    </svg>
+    <span className={"mascot mood-" + mood} style={{ width: size, height: size }} role="img" aria-label="Мишка">
+      <Pic pic={UI_PIC.mascot} size={size} />
+      {badge && <Pic pic={badge} size={Math.round(size * 0.42)} className="mascot-badge" />}
+    </span>
   );
 }
 
@@ -155,22 +146,24 @@ export function Stars({ n = 0, size = 16, of = 3 }) {
   );
 }
 
+export const AVATAR_BG = { cat: "#FFE9A8", dog: "#CDEBFF", rabbit: "#FFD9EC", bird: "#D3F5DC", fish: "#DCE2FF", turtle: "#FFE0C2", bear: "#F6E3CF", fox: "#FFE4D2" };
+
 export function Avatar({ avatar, size = 56 }) {
-  const color = { cat: "#FDE68A", dog: "#BAE6FD", rabbit: "#FBCFE8", bird: "#BBF7D0", fish: "#C7D2FE", turtle: "#FED7AA" }[avatar] || "#E3F2EE";
-  const icon = { cat: "Cat", dog: "Dog", rabbit: "Rabbit", bird: "Bird", fish: "Fish", turtle: "Turtle" }[avatar] || "User";
   return (
-    <span style={{ width: size, height: size, borderRadius: size / 2, background: color, display: "grid", placeItems: "center", color: "#1F2A44", flexShrink: 0 }}>
-      <Icon name={icon} size={size * 0.52} />
+    <span className="avatar" style={{ width: size, height: size, background: AVATAR_BG[avatar] || "var(--teal-soft)" }}>
+      <Pic pic={AVATAR_PIC[avatar] || "bear"} size={Math.round(size * 0.74)} />
     </span>
   );
 }
 
-export function PicTile({ icon, size = 84, tone = "teal" }) {
+// Picture for a word: a colour picture when there is one, else the line icon.
+export function PicTile({ icon, ko, size = 84, tone = "teal" }) {
   const bg = { teal: "var(--teal-soft)", coral: "var(--coral-soft)", navy: "var(--navy-soft)", amber: "var(--amber-soft)" }[tone];
   const fg = { teal: "var(--teal-d)", coral: "var(--coral)", navy: "var(--navy)", amber: "var(--warn)" }[tone];
+  const pic = picFor(ko, icon);
   return (
     <span className="pic-tile" style={{ width: size, height: size, background: bg, color: fg }}>
-      <Icon name={icon} size={size * 0.55} />
+      {pic ? <Pic pic={pic} size={Math.round(size * 0.72)} /> : <Icon name={icon} size={size * 0.55} />}
     </span>
   );
 }
