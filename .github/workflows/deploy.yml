@@ -24,6 +24,26 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # Record every lesson line with Supertonic 3 (open-source Korean and
+      # Russian voices). Cached, so only new or changed lines are recorded.
+      - run: node scripts/collect-speech.mjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/requirements-audio.txt
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/supertonic3
+            public/audio
+          key: audio-${{ hashFiles('speech/lines.json', 'scripts/make-audio.py', '.github/workflows/deploy.yml') }}
+          restore-keys: audio-
+      - run: pip install -r scripts/requirements-audio.txt
+      - run: python scripts/make-audio.py --samples
+        env:
+          KO_VOICE: F1
+          RU_VOICE: F2
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:

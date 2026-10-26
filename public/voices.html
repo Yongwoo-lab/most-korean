@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>목소리 고르기 · Мост</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<style>
+  :root { --bg: #fff8ee; --ink: #1f2a44; --muted: #47506a; --line: #ede7dc; --teal: #0f766e; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, "Noto Sans KR", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 26px; margin: 16px 0 4px; }
+  p { color: var(--muted); margin: 0 0 20px; }
+  .v { display: grid; grid-template-columns: 64px 1fr 1fr; gap: 12px; align-items: center; background: #fff; border: 2px solid var(--line); border-radius: 18px; padding: 12px 14px; margin-bottom: 10px; }
+  .v b { font-size: 20px; color: var(--teal); }
+  .v label { font-size: 13px; color: var(--muted); display: block; }
+  audio { width: 100%; height: 36px; }
+  @media (max-width: 560px) { .v { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <img src="logo.svg" alt="Мост · 다리" height="48" />
+  <h1>목소리 고르기</h1>
+  <p>Supertonic 3 음성 샘플이에요. 한국어(선생님 문장)와 러시아어(미시카 안내) 중 마음에 드는 이름(F1, M2 …)을 골라 알려 주세요.</p>
+  <div id="list">불러오는 중…</div>
+</main>
+<script>
+  fetch("audio/voices/voices.json")
+    .then((r) => r.json())
+    .then((names) => {
+      document.getElementById("list").innerHTML = names
+        .map((n) => `<div class="v"><b>${n}</b><div><label>한국어</label><audio controls preload="none" src="audio/voices/${n}-ko.mp3"></audio></div><div><label>русский</label><audio controls preload="none" src="audio/voices/${n}-ru.mp3"></audio></div></div>`)
+        .join("");
+    })
+    .catch(() => (document.getElementById("list").textContent = "아직 샘플이 없어요. 배포가 끝나면 다시 열어 주세요."));
+</script>
+</body>
+</html>

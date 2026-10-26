@@ -1,6 +1,6 @@
-// Text to speech. Uses recorded audio files when a manifest exists
-// (public/audio/manifest.json, made by scripts/make-audio.mjs), otherwise the
-// voices built into the device's browser.
+// Text to speech. Plays recordings made at build time with Supertonic 3
+// (public/audio/manifest.json, made by scripts/make-audio.py) and falls back
+// to the voices built into the device's browser for anything else.
 import { getState } from "./store.js";
 
 let manifest = null;
@@ -87,8 +87,9 @@ async function speakRaw(text, lang, slow, my) {
   const rate = slow ? Math.max(0.5, base - 0.35) : base;
   const m = await loadManifest();
   if (my !== token) return;
-  const file = m?.[lang]?.[text];
-  if (file) return playFile(import.meta.env.BASE_URL + "audio/" + file, slow ? 0.75 : 1);
+  const slowFile = slow && lang === "ko" ? m?.koSlow?.[text] : null;
+  const file = slowFile || m?.[lang]?.[text];
+  if (file) return playFile(import.meta.env.BASE_URL + "audio/" + file, slow && !slowFile ? 0.75 : 1);
   return synth(text, lang, rate);
 }
 
