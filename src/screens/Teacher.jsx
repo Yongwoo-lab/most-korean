@@ -8,7 +8,7 @@ import { removeProfile, resetAll, streak, totalStars, updateSettings, useStore }
 import { LLM_MODELS, preloadAsr, preloadLlm, progressOf, useMlStatus } from "../lib/ml.js";
 import { say, voiceStatus } from "../lib/speech.js";
 
-const KIND_KO = { listen: "듣기", read: "읽기", choose: "상황 고르기", grammar: "받침 규칙", build: "글자 만들기", task: "교과서 지시어", speak: "말하기", order: "문장 만들기", trace: "획순 쓰기" };
+const KIND_KO = { listen: "듣기", read: "읽기", choose: "상황 고르기", grammar: "받침 규칙", build: "글자 만들기", task: "교과서 지시어", speak: "따라 말하기", roleplay: "역할극", mission: "미션 말하기", order: "문장 만들기", trace: "획순 쓰기" };
 
 function stats(p) {
   const log = p.log || [];
@@ -31,8 +31,14 @@ function stats(p) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 6);
   const asks = log.filter((e) => e.kind === "ask").length;
+  // Sounds that came out as another sound when speaking, e.g. "ㅓ>ㅗ".
+  const sounds = {};
+  for (const e of log) for (const k of e.detail?.tips || []) if (k !== "missing") sounds[k] = (sounds[k] || 0) + 1;
+  const confused = Object.entries(sounds)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6);
   const minutes = Object.values(p.minutes || {}).reduce((a, b) => a + b, 0);
-  return { byKind, speakAvg, hard, asks, minutes };
+  return { byKind, speakAvg, hard, asks, minutes, confused };
 }
 
 export function Student({ p, onParent, extra }) {
@@ -106,6 +112,18 @@ export function Student({ p, onParent, extra }) {
             </div>
           ) : (
             <div className="muted">없어요</div>
+          )}
+          {s.confused.length > 0 && (
+            <>
+              <div style={{ fontWeight: 700, margin: "14px 0 8px" }}>말할 때 헷갈리는 소리 (바르게 → 들린 소리)</div>
+              <div className="row wrap" style={{ gap: 8 }}>
+                {s.confused.map(([k, n]) => (
+                  <span key={k} className="chip id-chip ko" style={{ fontSize: 17 }}>
+                    {k.replace(">", " → ")} <span className="t-sub">×{n}</span>
+                  </span>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -220,6 +238,15 @@ export function Settings() {
             <Icon name="Download" size={18} /> 미리 받아 두기
           </button>
         </div>
+        <div className="seg" role="group" aria-label="말하기 채점 방식" style={{ alignSelf: "flex-start" }}>
+          <button type="button" aria-pressed={(s.asrMode || "auto") === "auto"} onClick={() => updateSettings({ asrMode: "auto" })}>
+            자동 채점
+          </button>
+          <button type="button" aria-pressed={s.asrMode === "self"} onClick={() => updateSettings({ asrMode: "self" })}>
+            녹음 비교 (느린 기기)
+          </button>
+        </div>
+        <div className="t-sub">인식이 25초 넘게 걸리면 이 기기는 자동으로 "녹음 비교"로 바뀌어요. 아이가 자기 목소리와 원래 소리를 듣고 스스로 판단해요.</div>
       </div>
 
       <div className="col" style={{ gap: 8 }}>

@@ -1,6 +1,22 @@
 import { unitA1, unitA2, unitA3, unitA4, unitA5, unitA6, unitA7 } from "./hangul-units.js";
 import { unitB1, unitB2, unitB3, unitB4, unitB5, unitB6, unitB7, unitB8, unitB9, unitC1 } from "./life-units.js";
 import { unitC2, unitC3, unitC4, unitC5 } from "./class-units.js";
+import { MISSIONS } from "./missions.js";
+
+// Every unit with a dialogue gets a role play of it (the child speaks the
+// pupil's lines), and every unit with missions gets a mission step. Both go
+// right after "repeat after me", so speaking moves from copying to saying.
+function withSpeaking(unit) {
+  const scene = unit.steps.find((s) => s.type === "scene");
+  const extra = [];
+  if (scene?.lines.some((l) => l.who === "kid")) extra.push({ type: "roleplay", lines: scene.lines });
+  if (MISSIONS[unit.id]) extra.push({ type: "mission", q: MISSIONS[unit.id] });
+  if (!extra.length) return unit;
+  const at = unit.steps.findIndex((s) => s.type === "speak");
+  const steps = [...unit.steps];
+  steps.splice(at < 0 ? steps.length : at + 1, 0, ...extra);
+  return { ...unit, steps };
+}
 
 export const PARTS = [
   { id: "A", title: { ko: "한글", ru: "Хангыль: буквы и звуки" }, color: "#0F766E", dark: "#0A524C", soft: "#E3F2EE" },
@@ -30,7 +46,7 @@ export const UNITS = [
   unitC3,
   unitC4,
   unitC5,
-];
+].map(withSpeaking);
 
 export function unitById(id) {
   return UNITS.find((u) => u.id === id);

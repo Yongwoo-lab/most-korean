@@ -8,6 +8,7 @@ import { join } from "node:path";
 import * as hangul from "../src/data/hangul-units.js";
 import * as life from "../src/data/life-units.js";
 import * as lessons from "../src/data/class-units.js";
+import { MISSIONS } from "../src/data/missions.js";
 
 const HANGUL = /[ᄀ-ᇿ㄰-㆏가-힣]/;
 const ko = new Set();
@@ -32,6 +33,12 @@ for (const unit of [...Object.values(hangul), ...Object.values(life), ...Object.
     if (step.type === "grammar")
       for (const q of step.q || []) for (const o of q.options || step.options || []) ko.add(q.word + o + (step.suffix || ""));
   }
+}
+
+// Missions: the situation (Russian) and the model answers (Korean).
+for (const list of Object.values(MISSIONS)) for (const m of list) {
+  ru.add(m.ru);
+  for (const k of [m.answer, ...(m.alt || [])]) ko.add(k);
 }
 
 // Fixed lines in the screens: sayAll([["…", "ru"], ["…", "ko"]]) and say("…").

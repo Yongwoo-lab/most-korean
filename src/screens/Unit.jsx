@@ -6,13 +6,14 @@ import { sfx } from "../lib/sfx.js";
 import { Intro, Learn, Scene } from "../activities/basic.jsx";
 import { Build, Choose, Grammar, Listen, Read, Task } from "../activities/quiz.jsx";
 import { Order, Speak, Trace } from "../activities/produce.jsx";
+import { Mission, RolePlay } from "../activities/talk.jsx";
 import { addMinutes, finishUnit, learnWords, updateProfile } from "../lib/store.js";
 import { say, sayAll, stop } from "../lib/speech.js";
 
 // ?debug in the address lets a teacher or tester skip ahead.
 const DEBUG = typeof location !== "undefined" && location.search.includes("debug");
 
-const VIEWS = { intro: Intro, learn: Learn, scene: Scene, listen: Listen, read: Read, choose: Choose, grammar: Grammar, build: Build, task: Task, speak: Speak, order: Order, trace: Trace };
+const VIEWS = { intro: Intro, learn: Learn, scene: Scene, listen: Listen, read: Read, choose: Choose, grammar: Grammar, build: Build, task: Task, speak: Speak, order: Order, trace: Trace, roleplay: RolePlay, mission: Mission };
 
 const STEP_NAME = {
   intro: ["Знакомство", "알아보기", "Sparkles"],
@@ -25,6 +26,8 @@ const STEP_NAME = {
   build: ["Собираем", "만들기", "Blocks"],
   task: ["Задание", "문제", "ClipboardList"],
   speak: ["Говорим", "말하기", "Mic"],
+  roleplay: ["Разговор", "역할극", "Drama"],
+  mission: ["Миссия", "미션", "Target"],
   order: ["Пишем", "쓰기", "PencilLine"],
   trace: ["Пишем", "쓰기", "PencilLine"],
 };

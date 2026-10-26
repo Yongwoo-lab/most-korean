@@ -90,7 +90,7 @@ export function Learn({ step, onReady, onWords }) {
   );
 }
 
-const PEOPLE = {
+export const PEOPLE = {
   teacher: { icon: "GraduationCap", pic: "woman-teacher", bg: "#E8ECF7", fg: "#3B4A7A", ru: "Учитель", ko: "선생님" },
   nurse: { icon: "Stethoscope", pic: "health-worker", bg: "#E3F2EE", fg: "#0B5A54", ru: "Медсестра", ko: "보건 선생님" },
   friend: { icon: "Smile", pic: "boy", bg: "#FDE68A", fg: "#1F2A44", ru: "Одноклассник", ko: "친구" },

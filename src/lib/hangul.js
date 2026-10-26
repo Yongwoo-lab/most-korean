@@ -103,6 +103,40 @@ export function diffSyllables(target, said) {
   return parts;
 }
 
+// Like diffSyllables, but also says what was heard in place of each wrong
+// syllable (edit-distance alignment), so the app can explain the difference:
+// [{ ch: "거", ok: false, heard: "고" }, ...]. heard is "" when the syllable
+// was not heard at all.
+export function soundDiff(target, said) {
+  const t = [...normalize(target)];
+  const s = [...normalize(said)];
+  const cost = (a, b) => (a === b ? 0 : levenshtein(toJamo(a), toJamo(b)) / 3);
+  const d = Array.from({ length: t.length + 1 }, (_, i) => [i, ...new Array(s.length).fill(0)]);
+  for (let j = 1; j <= s.length; j++) d[0][j] = j;
+  for (let i = 1; i <= t.length; i++)
+    for (let j = 1; j <= s.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost(t[i - 1], s[j - 1]));
+  const heard = new Array(t.length).fill("");
+  let i = t.length;
+  let j = s.length;
+  while (i > 0 && j > 0) {
+    if (Math.abs(d[i][j] - (d[i - 1][j - 1] + cost(t[i - 1], s[j - 1]))) < 1e-9) {
+      heard[i - 1] = s[j - 1];
+      i--;
+      j--;
+    } else if (d[i][j] === d[i - 1][j] + 1) i--;
+    else j--;
+  }
+  const parts = [];
+  let k = 0;
+  for (const ch of target) {
+    if (isSyllable(ch)) {
+      const h = heard[k++];
+      parts.push({ ch, ok: h === ch, heard: h });
+    } else parts.push({ ch, ok: true, plain: true });
+  }
+  return parts;
+}
+
 // 받침 rule for 이에요/예요, 을/를 and friends.
 export function josa(word, withBatchim, without) {
   return word + (hasBatchim(word) ? withBatchim : without);

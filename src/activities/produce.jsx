@@ -1,13 +1,11 @@
 // Activities where the child produces Korean: speaking, putting words in
 // order and writing letters by hand.
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Icon, Meaning, Mascot, MiniSpeaker, Speaker, T, shuffled, useProfile } from "../components/ui.jsx";
+import { Icon, Meaning, MiniSpeaker, Speaker, T, shuffled } from "../components/ui.jsx";
 import { DoneNote, Feedback, Progress, useQuiz } from "./quiz.jsx";
+import { Marked, MicButton, MicHint, VoiceFeedback, useVoice } from "./voice.jsx";
 import { say } from "../lib/speech.js";
-import { micSupported, startRecording, toMono16k } from "../lib/recorder.js";
-import { diffSyllables, normalize, similarity, pronounce } from "../lib/hangul.js";
-import { transcribe, useMlStatus, progressOf } from "../lib/ml.js";
-import { logEvent } from "../lib/store.js";
+import { pronounce } from "../lib/hangul.js";
 import { STROKES } from "../data/strokes.js";
 
 // ---------------- speaking ----------------
@@ -15,58 +13,12 @@ import { STROKES } from "../data/strokes.js";
 export function Speak({ step, unitId, onReady }) {
   const items = step.items;
   const [i, setI] = useState(0);
-  const [rec, setRec] = useState(null); // active recorder
-  const [mine, setMine] = useState(null); // { url, blob }
-  const [result, setResult] = useState(null); // { text, score, parts }
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState("");
   const [done, setDone] = useState(false);
-  const ml = useMlStatus();
   const cur = items[i];
-  const canMic = micSupported();
-
-  useEffect(() => {
-    setMine(null);
-    setResult(null);
-    setErr("");
-  }, [i]);
-  useEffect(() => () => rec?.cancel(), [rec]);
-
-  const begin = async () => {
-    setErr("");
-    setResult(null);
-    try {
-      const r = await startRecording();
-      setRec(r);
-      // Stop by itself after a while, children forget to press again.
-      r.auto = setTimeout(() => finish(r), Math.min(9000, 2500 + normalize(cur.ko).length * 700));
-    } catch {
-      setErr("mic");
-    }
-  };
-
-  const finish = async (r = rec) => {
-    if (!r) return;
-    clearTimeout(r.auto);
-    setRec(null);
-    const out = await r.stop();
-    setMine(out);
-    new Audio(out.url).play().catch(() => {});
-    setBusy(true);
-    try {
-      const audio = await toMono16k(out.blob);
-      const text = await transcribe(audio);
-      const score = similarity(cur.ko, text);
-      setResult({ text, score, parts: diffSyllables(cur.ko, text) });
-      logEvent(unitId, "speak", score >= 0.75, { target: cur.ko, said: text, score: Math.round(score * 100) });
-    } catch {
-      setResult({ offline: true });
-    } finally {
-      setBusy(false);
-    }
-  };
+  const v = useVoice({ unitId, kind: "speak", answers: [cur.ko] });
 
   const next = () => {
+    v.reset();
     if (i + 1 >= items.length) {
       setDone(true);
       onReady(true);
@@ -85,9 +37,6 @@ export function Speak({ step, unitId, onReady }) {
       </div>
     );
 
-  const pct = result?.score != null ? Math.round(result.score * 100) : null;
-  const loading = ml.asr === "loading";
-
   return (
     <div className="col fade-in" style={{ gap: 18 }}>
       <div className="row wrap" style={{ justifyContent: "space-between" }}>
@@ -96,20 +45,11 @@ export function Speak({ step, unitId, onReady }) {
         </h2>
         <Progress i={i} total={items.length} />
       </div>
-      <div className="row wrap" style={{ gap: 8, color: "var(--muted)", fontSize: 14 }}>
-        <Icon name="ShieldCheck" size={18} />
-        <span className="ru">Твой голос слышит только этот компьютер. Никто другой не слушает.</span>
-      </div>
+      <PrivacyNote />
 
       <div className="card col" style={{ padding: "24px 24px 20px", gap: 14, alignItems: "center", textAlign: "center" }}>
         <div className="ko" style={{ fontSize: "clamp(36px, 6vw, 60px)", lineHeight: 1.2 }}>
-          {result?.parts
-            ? result.parts.map((p, k) => (
-                <span key={k} style={p.ok ? undefined : { background: "#FDE68A", borderBottom: "4px solid var(--warn)", borderRadius: 4 }}>
-                  {p.ch}
-                </span>
-              ))
-            : cur.ko}
+          <Marked text={cur.ko} parts={v.result?.parts} />
         </div>
         {pronounce(cur.ko) !== cur.ko.replace(/[?.!,~]/g, "").trim() && (
           <div className="pron" title="Так произносится · 이렇게 소리 나요">
@@ -124,69 +64,26 @@ export function Speak({ step, unitId, onReady }) {
       </div>
 
       <div className="row wrap" style={{ gap: 22, justifyContent: "center" }}>
-        {canMic ? (
-          <button
-            type="button"
-            className="speaker"
-            style={{ width: 128, height: 128, background: rec ? "var(--good)" : "var(--coral)", boxShadow: rec ? "0 0 0 16px rgba(21,128,61,0.18), 0 6px 0 #0f5f2d" : "0 0 0 14px rgba(194,65,12,0.14), 0 6px 0 var(--coral-d)" }}
-            onClick={() => (rec ? finish() : begin())}
-            aria-label={rec ? "Стоп" : "Записать голос"}
-            disabled={busy}
-          >
-            <Icon name={rec ? "Square" : "Mic"} size={54} />
-          </button>
-        ) : null}
-        <div className="col" style={{ gap: 8, maxWidth: 380 }}>
-          <div className="ru" style={{ fontSize: 17, fontWeight: 700 }}>
-            {rec ? "Говори… потом нажми ещё раз" : busy ? (loading ? "Готовлю распознавание речи…" : "Слушаю…") : canMic ? "Нажми и скажи вслух" : "Скажи вслух вместе с образцом"}
-          </div>
-          {busy && loading && (
-            <div style={{ height: 10, borderRadius: 5, background: "var(--line)", overflow: "hidden" }}>
-              <div style={{ width: `${Math.round(progressOf("asr") * 100)}%`, height: 10, background: "var(--teal)", transition: "width 0.3s" }} />
-            </div>
-          )}
-          {mine && (
-            <button type="button" className="btn btn-ghost" style={{ minHeight: 44, fontSize: 15 }} onClick={() => new Audio(mine.url).play()}>
-              <Icon name="Play" size={18} /> Послушать себя
-            </button>
-          )}
-          {err === "mic" && <div className="ru" style={{ color: "var(--warn)" }}>Микрофон не включён. Попроси учителя разрешить микрофон в браузере.</div>}
-        </div>
+        <MicButton v={v} size={128} />
+        <MicHint v={v} />
       </div>
 
-      {result && !result.offline && (
-        <div className={"feedback " + (pct >= 75 ? "good" : "try") + " fade-in"} role="status">
-          <Mascot size={52} mood={pct >= 75 ? "wow" : "think"} />
-          <div className="col" style={{ gap: 6, flex: 1 }}>
-            <div className="row" style={{ gap: 10 }}>
-              <div style={{ flex: 1, height: 12, borderRadius: 6, background: "rgba(0,0,0,0.08)", overflow: "hidden" }}>
-                <div style={{ width: pct + "%", height: 12, background: pct >= 75 ? "var(--good)" : "var(--warn)" }} />
-              </div>
-              <b>{pct}%</b>
-            </div>
-            <div className="ru">
-              {pct >= 90 ? "Отлично! Очень похоже." : pct >= 75 ? "Хорошо! Жёлтым — что можно сказать чётче." : "Послушай образец и попробуй ещё раз. Жёлтым — что прозвучало иначе."}
-            </div>
-            {result.text && (
-              <div className="t-sub">
-                Я услышал: <span className="ko">{result.text}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-      {result?.offline && (
-        <div className="feedback try fade-in">
-          <Mascot size={48} mood="think" />
-          <span className="ru">Сравни сам: послушай образец, потом себя. Похоже? Тогда дальше!</span>
-        </div>
-      )}
+      <VoiceFeedback v={v} model={cur.ko} goodText="Отлично! Очень похоже." />
 
       <div className="row" style={{ justifyContent: "flex-end", gap: 12 }}>
-        <button type="button" className="btn btn-teal" onClick={next} disabled={!!rec || busy}>
+        <button type="button" className="btn btn-teal" onClick={next} disabled={!!v.rec || v.busy}>
           {i + 1 >= items.length ? "Готово" : "Следующее"} <Icon name="ChevronRight" size={22} />
         </button>
       </div>
+    </div>
+  );
+}
+
+export function PrivacyNote() {
+  return (
+    <div className="row wrap" style={{ gap: 8, color: "var(--muted)", fontSize: 14 }}>
+      <Icon name="ShieldCheck" size={18} />
+      <span className="ru">Твой голос слышит только этот компьютер. Никто другой не слушает.</span>
     </div>
   );
 }
