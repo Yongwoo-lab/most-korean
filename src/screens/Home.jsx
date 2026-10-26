@@ -5,6 +5,7 @@ import { streak, today, totalStars } from "../lib/store.js";
 import { sayAll } from "../lib/speech.js";
 import { hasBatchim } from "../lib/hangul.js";
 import { logout, useCloud } from "../lib/cloud.js";
+import { dueWords } from "../lib/review.js";
 
 export function Brand({ go }) {
   return (
@@ -173,6 +174,7 @@ export default function Home({ go }) {
   const greet = `Привет, ${p?.name || ""}!`;
   const learned = Object.keys(p?.words || {}).length;
   const again = !!p?.units?.[next.id]?.done;
+  const due = p ? dueWords(p).length : 0;
 
   return (
     <>
@@ -205,6 +207,16 @@ export default function Home({ go }) {
                 <span className="ru hero-goal">{next.goal?.ru || next.title.ru}</span>
               </div>
             </div>
+            {due > 0 && (
+              <button type="button" className="review-banner" onClick={() => go("review")}>
+                <Pic pic="repeat-button" size={40} />
+                <span className="col" style={{ gap: 2, alignItems: "flex-start", flex: 1 }}>
+                  <b className="ru">Сначала повторим: {due} {due === 1 ? "слово" : due < 5 ? "слова" : "слов"}</b>
+                  <span className="ko">오늘의 복습 · 3분</span>
+                </span>
+                <Icon name="ChevronRight" size={24} />
+              </button>
+            )}
             <button type="button" className="btn btn-primary btn-xl" onClick={() => go("unit", { id: next.id })}>
               {again ? "Повторить" : "Учиться"} · {again ? "복습" : "시작"}
               <Icon name="ChevronRight" size={28} />

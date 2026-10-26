@@ -141,6 +141,14 @@ export function logEvent(unit, kind, ok, detail) {
   });
 }
 
+// Result of one daily-review question (see lib/review.js).
+export function setReview(ko, state) {
+  updateProfile((p) => {
+    p.review = { ...(p.review || {}), [ko]: state };
+    return p;
+  });
+}
+
 export function addMinutes(min) {
   updateProfile((p) => {
     const d = today();

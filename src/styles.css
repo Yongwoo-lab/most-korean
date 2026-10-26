@@ -1387,6 +1387,31 @@ table.rec th {
 }
 
 
+/* ---------- review ---------- */
+.review-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: #fff;
+  color: var(--ink);
+  border: 3px solid var(--amber);
+  box-shadow: 0 4px 0 #d38a0a;
+  margin-bottom: 4px;
+}
+.review-banner:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #d38a0a;
+}
+.review-word {
+  font-size: clamp(44px, 8vw, 72px);
+  text-align: center;
+  padding: 28px;
+}
+
 /* ---------- speaking ---------- */
 .speaker.mic {
   background: var(--coral);
