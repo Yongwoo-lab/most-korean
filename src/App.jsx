@@ -9,6 +9,7 @@ import Words from "./screens/Words.jsx";
 import Teacher from "./screens/Teacher.jsx";
 import Login from "./screens/Login.jsx";
 import Review from "./screens/Review.jsx";
+import Chat from "./screens/Chat.jsx";
 import Center from "./screens/Center.jsx";
 import Parent from "./screens/Parent.jsx";
 import { useCloud } from "./lib/cloud.js";
@@ -55,8 +56,10 @@ export default function App() {
       {screen === "home" && <Home go={go} />}
       {screen === "unit" && <Unit key={route.id} id={route.id} go={go} />}
       {screen === "tutor" && <Tutor go={go} />}
+      {screen === "chat" && <Chat go={go} id={route.id} />}
       {screen === "words" && <Words go={go} />}
       {screen === "review" && <Review go={go} />}
+      {screen === "check" && <Review key="check" go={go} mode="check" />}
       {screen === "teacher" && <Teacher go={go} />}
     </div>
   );

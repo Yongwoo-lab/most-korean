@@ -6,6 +6,7 @@ import { sayAll } from "../lib/speech.js";
 import { hasBatchim } from "../lib/hangul.js";
 import { logout, useCloud } from "../lib/cloud.js";
 import { dueWords } from "../lib/review.js";
+import { checkDue } from "../lib/skills.js";
 
 export function Brand({ go }) {
   return (
@@ -175,6 +176,7 @@ export default function Home({ go }) {
   const learned = Object.keys(p?.words || {}).length;
   const again = !!p?.units?.[next.id]?.done;
   const due = p ? dueWords(p).length : 0;
+  const checkNow = p && !due && checkDue(p);
 
   return (
     <>
@@ -217,6 +219,16 @@ export default function Home({ go }) {
                 <Icon name="ChevronRight" size={24} />
               </button>
             )}
+            {checkNow && (
+              <button type="button" className="review-banner check" onClick={() => go("check")}>
+                <Pic pic="bullseye" size={40} />
+                <span className="col" style={{ gap: 2, alignItems: "flex-start", flex: 1 }}>
+                  <b className="ru">Проверь себя: слушать, говорить, читать, писать</b>
+                  <span className="ko">이번 주 실력 점검 · 8문제</span>
+                </span>
+                <Icon name="ChevronRight" size={24} />
+              </button>
+            )}
             <button type="button" className="btn btn-primary btn-xl" onClick={() => go("unit", { id: next.id })}>
               {again ? "Повторить" : "Учиться"} · {again ? "복습" : "시작"}
               <Icon name="ChevronRight" size={28} />
@@ -224,10 +236,10 @@ export default function Home({ go }) {
           </section>
 
           <div className="side-grid">
-            <button type="button" className="side-tile" onClick={() => go("tutor")}>
+            <button type="button" className="side-tile" onClick={() => go("chat")}>
               <Pic pic={UI_PIC.tutor} size={44} />
               <b className="ru">Мишка</b>
-              <span className="ru">спросить</span>
+              <span className="ru">поговорить</span>
             </button>
             <button type="button" className="side-tile" onClick={() => go("words")}>
               <Pic pic={UI_PIC.words} size={44} />

@@ -7,8 +7,9 @@ import { UNITS } from "../data/course.js";
 import { removeProfile, resetAll, streak, totalStars, updateSettings, useStore } from "../lib/store.js";
 import { LLM_MODELS, preloadAsr, preloadLlm, progressOf, useMlStatus } from "../lib/ml.js";
 import { say, voiceStatus } from "../lib/speech.js";
+import { AreaBars } from "../components/areas.jsx";
 
-const KIND_KO = { listen: "듣기", read: "읽기", choose: "상황 고르기", grammar: "받침 규칙", build: "글자 만들기", task: "교과서 지시어", speak: "따라 말하기", roleplay: "역할극", mission: "미션 말하기", order: "문장 만들기", trace: "획순 쓰기" };
+const KIND_KO = { spell: "맞춤법 고르기", listen: "듣기", read: "읽기", choose: "상황 고르기", grammar: "받침 규칙", build: "글자 만들기", task: "교과서 지시어", speak: "따라 말하기", roleplay: "역할극", mission: "미션 말하기", order: "문장 만들기", trace: "획순 쓰기" };
 
 function stats(p) {
   const log = p.log || [];
@@ -59,6 +60,7 @@ export function Student({ p, onParent, extra }) {
         </button>
       </div>
       {extra}
+      <AreaBars p={p} />
       <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
         <div>
           <div style={{ fontWeight: 700, marginBottom: 8 }}>단원 진도</div>
@@ -167,6 +169,7 @@ export function ParentSheet({ p, onClose, cloud }) {
           </div>
         ))}
       </div>
+      <AreaBars p={p} lang="ru" />
       {last && (
         <div className="ru" style={{ fontSize: 17 }}>
           Последний урок: <b>{last.title.ru}</b> ({last.title.ko}) <Stars n={p.units[last.id].stars} />

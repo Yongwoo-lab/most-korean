@@ -9,6 +9,7 @@ import * as hangul from "../src/data/hangul-units.js";
 import * as life from "../src/data/life-units.js";
 import * as lessons from "../src/data/class-units.js";
 import { MISSIONS } from "../src/data/missions.js";
+import { CHATS } from "../src/data/chats.js";
 
 const HANGUL = /[ᄀ-ᇿ㄰-㆏가-힣]/;
 const ko = new Set();
@@ -40,6 +41,12 @@ for (const list of Object.values(MISSIONS)) for (const m of list) {
   ru.add(m.ru);
   for (const k of [m.answer, ...(m.alt || [])]) ko.add(k);
 }
+
+// Talks with Мишка: his questions and replies, and the model answers.
+for (const list of Object.values(CHATS)) for (const t of list) {
+  for (const k of [t.ko, t.reply, t.answer, ...(t.alt || [])]) if (/[가-힣]/.test(k) && !/\d/.test(k)) ko.add(k);
+}
+ko.add("괜찮아요! 다음에 또 해요.");
 
 // Fixed lines in the screens: sayAll([["…", "ru"], ["…", "ko"]]) and say("…").
 function files(dir) {

@@ -29,6 +29,7 @@ import {
   CircleAlert,
   CircleDot,
   CircleHelp,
+  ClipboardCheck,
   ClipboardList,
   Clock,
   Clock1,
@@ -147,6 +148,8 @@ import {
   Trash2,
   TreePine,
   Trees,
+  TrendingDown,
+  TrendingUp,
   Underline,
   User,
   UserPlus,
@@ -162,4 +165,4 @@ import {
   ZoomIn,
 } from "lucide-react";
 
-export const ICONS = { AlarmClock, Apple, Armchair, ArrowLeftRight, ArrowRight, ArrowUp, Baby, Backpack, BadgeCheck, Banana, Bandage, Bird, Blocks, BookOpen, Box, Brain, Building2, Bus, Calculator, Car, Carrot, ChartColumn, Check, ChevronLeft, ChevronRight, Circle, CircleAlert, CircleDot, CircleHelp, ClipboardList, Clock, Clock1, Clock10, Clock11, Clock12, Clock2, Clock3, Clock4, Clock5, Clock6, Clock7, Clock8, Clock9, Cloud, CloudOff, CloudRain, Coffee, Cog, Coins, CookingPot, Cpu, Delete, Dog, Download, Drama, Ear, EarOff, Equal, Eraser, Eye, EyeOff, FileText, Fish, Flag, Flame, FlaskConical, Footprints, Frown, GlassWater, Goal, GraduationCap, Grape, Ham, Hand, Hash, Heart, HeartHandshake, Hospital, House, IdCard, KeyRound, Layers, Leaf, Library, Lightbulb, Lock, LogOut, Magnet, Map, MapPin, MessageCircle, MessageSquareText, MessagesSquare, Mic, Microscope, Milk, Minus, Moon, Mountain, MousePointerClick, Music, Notebook, Package, Paperclip, Pencil, PencilLine, PencilRuler, PersonStanding, PiggyBank, Pill, Play, Plus, Presentation, Printer, Rabbit, RefreshCw, Repeat, RotateCcw, RotateCw, Ruler, Salad, School, Scissors, Search, Send, ShieldCheck, Shirt, ShoppingCart, Shuffle, Smile, Snail, Soup, Sparkles, SpellCheck, Spline, Sprout, Square, SquareDashed, Squirrel, Stethoscope, Target, Thermometer, ThumbsUp, Toilet, Trash2, TreePine, Trees, Underline, User, UserPlus, Users, Utensils, Volleyball, Volume2, VolumeX, Waves, Wheat, Wind, X, ZoomIn };
+export const ICONS = { AlarmClock, Apple, Armchair, ArrowLeftRight, ArrowRight, ArrowUp, Baby, Backpack, BadgeCheck, Banana, Bandage, Bird, Blocks, BookOpen, Box, Brain, Building2, Bus, Calculator, Car, Carrot, ChartColumn, Check, ChevronLeft, ChevronRight, Circle, CircleAlert, CircleDot, CircleHelp, ClipboardCheck, ClipboardList, Clock, Clock1, Clock10, Clock11, Clock12, Clock2, Clock3, Clock4, Clock5, Clock6, Clock7, Clock8, Clock9, Cloud, CloudOff, CloudRain, Coffee, Cog, Coins, CookingPot, Cpu, Delete, Dog, Download, Drama, Ear, EarOff, Equal, Eraser, Eye, EyeOff, FileText, Fish, Flag, Flame, FlaskConical, Footprints, Frown, GlassWater, Goal, GraduationCap, Grape, Ham, Hand, Hash, Heart, HeartHandshake, Hospital, House, IdCard, KeyRound, Layers, Leaf, Library, Lightbulb, Lock, LogOut, Magnet, Map, MapPin, MessageCircle, MessageSquareText, MessagesSquare, Mic, Microscope, Milk, Minus, Moon, Mountain, MousePointerClick, Music, Notebook, Package, Paperclip, Pencil, PencilLine, PencilRuler, PersonStanding, PiggyBank, Pill, Play, Plus, Presentation, Printer, Rabbit, RefreshCw, Repeat, RotateCcw, RotateCw, Ruler, Salad, School, Scissors, Search, Send, ShieldCheck, Shirt, ShoppingCart, Shuffle, Smile, Snail, Soup, Sparkles, SpellCheck, Spline, Sprout, Square, SquareDashed, Squirrel, Stethoscope, Target, Thermometer, ThumbsUp, Toilet, Trash2, TreePine, Trees, TrendingDown, TrendingUp, Underline, User, UserPlus, Users, Utensils, Volleyball, Volume2, VolumeX, Waves, Wheat, Wind, X, ZoomIn };

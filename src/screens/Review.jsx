@@ -7,7 +7,9 @@ import { Icon, Mascot, MiniSpeaker, Pic, PicTile, Speaker, shuffled, useProfile 
 import { Feedback } from "../activities/quiz.jsx";
 import { MicButton, MicHint, VoiceFeedback, useVoice } from "../activities/voice.jsx";
 import { SKILL_AT, dueWords, nextState, reviewState, variants } from "../lib/review.js";
-import { addMinutes, logEvent, setReview } from "../lib/store.js";
+import { addCheck, addMinutes, logEvent, setReview } from "../lib/store.js";
+import { AREAS, areaOf } from "../lib/skills.js";
+import { isSyllable } from "../lib/hangul.js";
 import { micSupported } from "../lib/recorder.js";
 import { say } from "../lib/speech.js";
 import { sfx } from "../lib/sfx.js";
@@ -150,11 +152,33 @@ function Question({ item, p, onDone }) {
   );
 }
 
-export default function Review({ go }) {
+// "Проверь себя · 실력 점검": two questions per skill on words already
+// learned, no second tries. The result goes to the teacher and parents.
+function checkQueue(p) {
+  const all = Object.entries(p.words || {});
+  const used = new Set();
+  const pick = (ok) => {
+    const pool = shuffled(all.filter(([ko, w]) => !used.has(ko) && ok(ko, w)));
+    const out = pool.slice(0, 2).map(([ko]) => ko);
+    out.forEach((ko) => used.add(ko));
+    return out;
+  };
+  const q = [];
+  for (const ko of pick((ko, w) => w.icon)) q.push({ ko, skill: "listen" });
+  for (const ko of pick(() => true)) q.push({ ko, skill: "read" });
+  if (micSupported()) for (const ko of pick((ko) => ko.length <= 8)) q.push({ ko, skill: "speak" });
+  for (const ko of pick((ko) => [...ko].every((c) => isSyllable(c) || c === " ") && variants(ko, 2).length === 2)) q.push({ ko, skill: "spell" });
+  return q.map((x) => ({ ...x, again: false }));
+}
+
+export default function Review({ go, mode = "review" }) {
   const p = useProfile();
+  const check = mode === "check";
   const started = useRef(Date.now());
+  const res = useRef({});
   // The list is fixed when the screen opens; wrong words come back once at the end.
   const [queue, setQueue] = useState(() => {
+    if (check) return checkQueue(p);
     const due = dueWords(p);
     const canSpeak = micSupported();
     return due.map((r) => {
@@ -173,12 +197,19 @@ export default function Review({ go }) {
     if (done && queue.length) {
       const min = Math.round((Date.now() - started.current) / 60000);
       if (min > 0) addMinutes(min);
+      if (check) addCheck(res.current);
     }
   }, [done]);
 
   const answered = (ok) => {
     const item = queue[i];
-    if (!item.again) {
+    if (check) {
+      const a = areaOf(item.skill);
+      const r = (res.current[a] ||= [0, 0]);
+      r[1]++;
+      if (ok) r[0]++, setRight((n) => n + 1);
+      logEvent("check", item.skill, ok, { ko: item.ko });
+    } else if (!item.again) {
       setReview(item.ko, nextState(reviewState(p, item.ko), ok));
       logEvent("review", item.skill, ok, { ko: item.ko });
       if (ok) setRight((n) => n + 1);
@@ -194,7 +225,7 @@ export default function Review({ go }) {
       <div className="page col" style={{ maxWidth: 820, gap: 18 }}>
         <div className="row wrap" style={{ justifyContent: "space-between", gap: 12 }}>
           <h1 className="display" style={{ fontSize: 30 }}>
-            Повторение <span className="ko muted" style={{ fontSize: 22 }}>· 오늘의 복습</span>
+            {check ? "Проверь себя" : "Повторение"} <span className="ko muted" style={{ fontSize: 22 }}>· {check ? "실력 점검" : "오늘의 복습"}</span>
           </h1>
           {!done && (
             <span className="chip" style={{ boxShadow: "none" }}>
@@ -213,6 +244,8 @@ export default function Review({ go }) {
               </button>
             </div>
           </div>
+        ) : done && check ? (
+          <CheckResult res={res.current} go={go} />
         ) : done ? (
           <div className="card col" style={{ padding: 28, gap: 16, alignItems: "center", textAlign: "center" }}>
             <Pic pic="trophy" size={96} />
@@ -234,5 +267,35 @@ export default function Review({ go }) {
         )}
       </div>
     </>
+  );
+}
+
+function CheckResult({ res, go }) {
+  return (
+    <div className="card col fade-in" style={{ padding: 28, gap: 18, alignItems: "center", textAlign: "center" }}>
+      <Pic pic="trophy" size={88} />
+      <b className="ru" style={{ fontSize: 24 }}>Готово! Вот что у тебя получается</b>
+      <div className="check-grid">
+        {AREAS.filter((a) => res[a.id]).map((a) => {
+          const [ok, n] = res[a.id];
+          return (
+            <div key={a.id} className={"check-cell" + (ok === n ? " full" : "")}>
+              <Icon name={a.icon} size={28} />
+              <b className="ru">{a.ru}</b>
+              <span className="ko t-sub">{a.ko}</span>
+              <span className="check-dots">
+                {Array.from({ length: n }, (_, i) => (
+                  <span key={i} className={i < ok ? "on" : ""} />
+                ))}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+      <span className="ru muted">Учитель увидит результат. Ошибки — это нормально: так мы знаем, что повторить.</span>
+      <button type="button" className="btn btn-primary btn-xl" onClick={() => go("home")}>
+        Дальше <Icon name="ChevronRight" size={26} />
+      </button>
+    </div>
   );
 }

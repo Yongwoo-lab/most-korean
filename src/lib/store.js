@@ -185,3 +185,11 @@ export function subscribe(l) {
   listeners.add(l);
   return () => listeners.delete(l);
 }
+
+// Result of a self-check: { listen: [right, asked], ... } per skill.
+export function addCheck(res) {
+  updateProfile((p) => {
+    p.checks = [...(p.checks || []), { ts: Date.now(), res }].slice(-20);
+    return p;
+  });
+}

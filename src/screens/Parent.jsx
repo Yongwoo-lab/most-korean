@@ -6,6 +6,7 @@ import { Avatar, Icon, MiniSpeaker, Pic, Stars } from "../components/ui.jsx";
 import { UNITS } from "../data/course.js";
 import { newProfile, streak, totalStars } from "../lib/store.js";
 import { call, errorText, logout, useCloud } from "../lib/cloud.js";
+import { AreaBars } from "../components/areas.jsx";
 
 const DAYS = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
 
@@ -67,6 +68,7 @@ function Child({ c }) {
           ))}
         </div>
       </div>
+      <AreaBars p={p} lang="ru" />
       {done.length > 0 && (
         <div className="col" style={{ gap: 8 }}>
           <b>Пройденные уроки</b>
