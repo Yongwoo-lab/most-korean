@@ -1,4 +1,6 @@
-// Profiles, progress and settings, kept in this browser only.
+// Profiles, progress and settings, kept in this browser. A profile that
+// belongs to a logged-in student (cloud: true) is also copied to the server
+// by lib/cloud.js.
 import { useSyncExternalStore } from "react";
 
 const KEY = "most.v1";
@@ -91,7 +93,14 @@ export function updateProfile(fn) {
   const p = currentProfile();
   if (!p) return;
   const next = fn(structuredClone(p));
+  next.updated = Date.now();
   set({ ...state, profiles: state.profiles.map((x) => (x.id === p.id ? next : x)) });
+}
+
+// Puts a whole profile in place (from the server) and makes it current.
+export function putProfile(p) {
+  const others = state.profiles.filter((x) => x.id !== p.id);
+  set({ ...state, profiles: [...others, p], current: p.id });
 }
 
 export function updateSettings(patch) {
@@ -162,4 +171,9 @@ export function totalStars(p) {
 
 export function resetAll() {
   set(empty());
+}
+
+export function subscribe(l) {
+  listeners.add(l);
+  return () => listeners.delete(l);
 }

@@ -22,6 +22,9 @@ export default function Profiles({ go }) {
       <div className="welcome-logo">
         <img src="logo.svg" alt="Мост · 다리" height="72" />
       </div>
+      <button type="button" className="login-local" style={{ marginBottom: 16 }} onClick={() => go("login")}>
+        ← 기관 로그인 · Вход через центр
+      </button>
       <div className="welcome-hero">
         <Mascot size={96} />
         <div className="col" style={{ gap: 4, flex: 1 }}>

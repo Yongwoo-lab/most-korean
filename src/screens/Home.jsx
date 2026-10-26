@@ -4,6 +4,7 @@ import { Avatar, Icon, Mascot, Pic, Stars, T, useProfile } from "../components/u
 import { streak, today, totalStars } from "../lib/store.js";
 import { sayAll } from "../lib/speech.js";
 import { hasBatchim } from "../lib/hangul.js";
+import { logout, useCloud } from "../lib/cloud.js";
 
 export function Brand({ go }) {
   return (
@@ -20,6 +21,9 @@ export function Brand({ go }) {
 
 export function TopBar({ go, children }) {
   const p = useProfile();
+  const { sync } = useCloud();
+  // A logged-in student leaves by logging out; local profiles go back to the list.
+  const who = () => (p.cloud ? confirm("Выйти? · 로그아웃할까요?") && logout().then(() => go("home")) : go("profiles"));
   return (
     <header className="topbar">
       <Brand go={go} />
@@ -33,7 +37,12 @@ export function TopBar({ go, children }) {
           <span className="chip stat" title="Звёзды · 별">
             <Pic pic={UI_PIC.star} size={24} /> {totalStars(p)}
           </span>
-          <button type="button" className="chip who-chip" onClick={() => go("profiles")} aria-label="Сменить ученика">
+          {p.cloud && (
+            <span className="chip stat" title={sync === "offline" ? "Нет интернета: сохраню позже · 오프라인" : "Сохранено · 저장됨"}>
+              <Icon name={sync === "offline" ? "CloudOff" : "Cloud"} size={22} />
+            </span>
+          )}
+          <button type="button" className="chip who-chip" onClick={who} aria-label={p.cloud ? "Выйти" : "Сменить ученика"}>
             <Avatar avatar={p.avatar} size={34} />
             <span>{p.name}</span>
           </button>
@@ -222,10 +231,12 @@ export default function Home({ go }) {
             </div>
           </div>
 
-          <button type="button" className="teacher-link" onClick={() => go("teacher")}>
-            <Pic pic={UI_PIC.teacher} size={26} /> 선생님 · 부모님 화면
-            <Icon name="ChevronRight" size={18} />
-          </button>
+          {!p?.cloud && (
+            <button type="button" className="teacher-link" onClick={() => go("teacher")}>
+              <Pic pic={UI_PIC.teacher} size={26} /> 선생님 · 부모님 화면
+              <Icon name="ChevronRight" size={18} />
+            </button>
+          )}
         </aside>
 
         <main className="map">

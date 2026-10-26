@@ -35,7 +35,7 @@ function stats(p) {
   return { byKind, speakAvg, hard, asks, minutes };
 }
 
-function Student({ p, onParent }) {
+export function Student({ p, onParent, extra }) {
   const s = stats(p);
   const done = UNITS.filter((u) => p.units?.[u.id]?.done);
   return (
@@ -52,6 +52,7 @@ function Student({ p, onParent }) {
           <Icon name="Printer" size={18} /> 부모님용 (러시아어)
         </button>
       </div>
+      {extra}
       <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
         <div>
           <div style={{ fontWeight: 700, marginBottom: 8 }}>단원 진도</div>
@@ -112,7 +113,7 @@ function Student({ p, onParent }) {
   );
 }
 
-function ParentSheet({ p, onClose }) {
+export function ParentSheet({ p, onClose, cloud }) {
   const s = stats(p);
   const words = Object.entries(p.words || {})
     .sort((a, b) => b[1].ts - a[1].ts)
@@ -168,12 +169,14 @@ function ParentSheet({ p, onClose }) {
       <div style={{ background: "var(--amber-soft)", borderRadius: 16, padding: 16 }} className="ru">
         <b>Поиграйте дома 2 минуты.</b> Покажите предмет и спросите: «Как это по-корейски?» Если ребёнок ответил — похвалите: <span className="ko">잘했어!</span> (Молодец!). Не страшно, если вы сами не знаете корейский: ребёнок может стать вашим учителем.
       </div>
-      <div className="t-sub ru">Данные ребёнка хранятся только на этом устройстве и никуда не отправляются.</div>
+      <div className="t-sub ru">
+        {cloud ? "Данные видят только учителя центра и вы. Пароль ребёнка нигде не показывается." : "Данные ребёнка хранятся только на этом устройстве и никуда не отправляются."}
+      </div>
     </div>
   );
 }
 
-function Settings() {
+export function Settings() {
   const st = useStore();
   const ml = useMlStatus();
   const [voices, setVoices] = useState(voiceStatus());

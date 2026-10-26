@@ -45,3 +45,11 @@ ONNX 런타임 wasm은 jsDelivr CDN에서, 모델은 Hugging Face에서 처음 �
 - 실제 태블릿·PC에서 Whisper와 AI 모델 동작 확인
 - 나머지 9개 단원
 - 경주 지역아동센터 시범 사용
+
+## 기관 로그인과 학습 기록 (Supabase)
+
+1. Supabase 프로젝트의 SQL Editor에서 [`supabase/schema.sql`](supabase/schema.sql)을 한 번 실행해요. 마지막 줄에 선생님 가입 코드가 나와요.
+2. Authentication → Sign In / Providers에서 **Allow anonymous sign-ins**를 켜요. 기기마다 익명 세션을 하나 두고, 기관 + 아이디로 로그인하면 그 세션이 계정에 연결돼요. 그래서 이메일이 필요 없어요.
+3. 주소와 publishable 키는 `src/lib/cloud.js`에 있어요 (`VITE_SUPABASE_URL`, `VITE_SUPABASE_KEY`로 바꿀 수 있음).
+
+표에는 직접 접근할 수 없고(RLS, 정책 없음), 앱은 `schema.sql`의 함수만 불러요. 함수가 호출한 사람의 역할과 기관을 확인해요.
