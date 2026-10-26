@@ -13,10 +13,11 @@ import { say, sayAll, stop } from "../lib/speech.js";
 // ?debug in the address lets a teacher or tester skip ahead.
 const DEBUG = typeof location !== "undefined" && location.search.includes("debug");
 
-const VIEWS = { intro: Intro, learn: Learn, scene: Scene, listen: Listen, read: Read, choose: Choose, grammar: Grammar, build: Build, task: Task, speak: Speak, order: Order, trace: Trace, roleplay: RolePlay, mission: Mission };
+const VIEWS = { intro: Intro, explain: Intro, learn: Learn, scene: Scene, listen: Listen, read: Read, choose: Choose, grammar: Grammar, build: Build, task: Task, speak: Speak, order: Order, trace: Trace, roleplay: RolePlay, mission: Mission };
 
 const STEP_NAME = {
   intro: ["Знакомство", "알아보기", "Sparkles"],
+  explain: ["Как сказать", "설명", "Lightbulb"],
   scene: ["Послушай", "만나기", "MessagesSquare"],
   learn: ["Учим", "배우기", "BookOpen"],
   listen: ["Слушаем", "듣기", "Ear"],

@@ -30,6 +30,8 @@ for (const unit of [...Object.values(hangul), ...Object.values(life), ...Object.
   for (const step of unit.steps || []) {
     // Intro steps are read aloud as one paragraph.
     if (step.type === "intro" && step.blocks) ru.add(step.blocks.map((b) => b.ru).join(" "));
+    // Explanation slides: each slide on its own, and sentence patterns whole.
+    for (const b of step.blocks || []) if (b.pattern) ko.add(b.pattern.map((x) => x.t).join(""));
     // Grammar answers are spoken as word + ending.
     if (step.type === "grammar")
       for (const q of step.q || []) for (const o of q.options || step.options || []) ko.add(q.word + o + (step.suffix || ""));

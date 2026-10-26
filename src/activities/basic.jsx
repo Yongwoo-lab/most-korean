@@ -3,41 +3,136 @@ import { useEffect, useState } from "react";
 import { Icon, Meaning, MiniSpeaker, Mascot, Pic, PicTile, Speaker, T, useProfile, useReadAloud } from "../components/ui.jsx";
 import { say, sayAll } from "../lib/speech.js";
 
+// One idea per slide, read aloud in Russian, with something to look at and
+// tap: letters adding up (eq), tiles to hear (show), a sentence pattern with
+// the changing part marked (pattern) and examples with pictures (ex).
+// A unit can also carry a short video (step.video, a YouTube id).
 export function Intro({ step, onReady }) {
-  useEffect(() => onReady(true), []);
-  useReadAloud(step.blocks.map((b) => b.ru).join(" "));
   const p = useProfile();
+  const blocks = step.blocks.map((b, i) => (i === step.blocks.length - 1 && step.show && !b.show ? { ...b, show: step.show } : b));
+  const [k, setK] = useState(0);
+  const b = blocks[k];
+  const last = k === blocks.length - 1;
+  useEffect(() => onReady(blocks.length === 1), []);
+  useEffect(() => {
+    if (last) onReady(true);
+  }, [k]);
+  useReadAloud(b.ru);
+  const text = p?.help === "none" && b.ko ? b.ko : b.ru;
   return (
-    <div className="col fade-in" style={{ gap: 20 }}>
-      <div className="row" style={{ alignItems: "flex-start", gap: 16 }}>
-        <Mascot size={88} />
-        <div className="col" style={{ flex: 1, gap: 12 }}>
-          <h2 className="act-title">
-            <T ru={step.title.ru} ko={step.title.ko} />
-          </h2>
-          {step.blocks.map((b, i) => (
-            <div key={i} className="bubble">
-              {p?.help === "none" && b.ko ? b.ko : <span className="ru">{b.ru}</span>}
-              {p?.help !== "many" && p?.help !== "none" && b.ko ? <div className="t-sub">{b.ko}</div> : null}
-            </div>
-          ))}
-        </div>
+    <div className="col fade-in" style={{ gap: 18 }}>
+      <div className="row wrap" style={{ justifyContent: "space-between", gap: 12 }}>
+        <h2 className="act-title">
+          <T ru={step.title.ru} ko={step.title.ko} />
+        </h2>
+        {blocks.length > 1 && (
+          <span className="slide-dots" aria-label={`${k + 1} / ${blocks.length}`}>
+            {blocks.map((_, i) => (
+              <button key={i} type="button" className={i === k ? "on" : i < k ? "seen" : ""} onClick={() => setK(i)} aria-label={String(i + 1)} />
+            ))}
+          </span>
+        )}
       </div>
-      {step.show && (
-        <div className="card" style={{ padding: 20 }}>
-          <div className="t-sub ru" style={{ marginBottom: 10 }}>
-            Нажми, чтобы услышать
+      <div key={k} className="card col slide fade-in">
+        <div className="row" style={{ alignItems: "flex-start", gap: 14 }}>
+          <Mascot size={72} mood={b.eq || b.pattern ? "think" : "happy"} />
+          <div className="col" style={{ flex: 1, gap: 6 }}>
+            <div className={"slide-text " + (text === b.ru ? "ru" : "ko")}>{text}</div>
+            {p?.help !== "many" && p?.help !== "none" && b.ko && <div className="t-sub">{b.ko}</div>}
           </div>
-          <div className="row wrap" style={{ gap: 10 }}>
-            {step.show.map((s) => (
-              <button key={s} type="button" className="tile" onClick={() => say(s)} style={{ minWidth: 72 }}>
-                {s}
+          <button type="button" className="btn btn-ghost icon-btn" aria-label="Ещё раз" onClick={() => sayAll([[b.ru, "ru"]])}>
+            <Icon name="Volume2" size={22} />
+          </button>
+        </div>
+        {b.eq && <Equation eq={b.eq} />}
+        {b.pattern && <Pattern parts={b.pattern} />}
+        {b.ex && (
+          <div className="slide-ex">
+            {b.ex.map((x) => (
+              <button key={x.ko} type="button" className="slide-ex-row" onClick={() => say(x.ko)}>
+                {x.icon && <PicTile icon={x.icon} ko={x.ko} size={56} />}
+                <span className="col" style={{ gap: 2, alignItems: "flex-start" }}>
+                  <span className="ko" style={{ fontSize: 24, fontWeight: 700 }}>{x.ko}</span>
+                  {x.ru && <span className="ru muted">{x.ru}</span>}
+                </span>
+                <Icon name="Volume2" size={20} style={{ marginLeft: "auto", color: "var(--teal-d)" }} />
               </button>
             ))}
           </div>
+        )}
+        {b.show && (
+          <div className="row wrap" style={{ gap: 10 }}>
+            {b.show.map((x) => (
+              <button key={x} type="button" className="tile" onClick={() => say(x)} style={{ minWidth: 72 }}>
+                {x}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      {step.video && last && <Video id={step.video} />}
+      {blocks.length > 1 && (
+        <div className="row" style={{ gap: 10 }}>
+          {k > 0 && (
+            <button type="button" className="btn btn-ghost" onClick={() => setK(k - 1)}>
+              <Icon name="ChevronLeft" size={20} /> Назад
+            </button>
+          )}
+          {!last && (
+            <button type="button" className="btn btn-teal" onClick={() => setK(k + 1)}>
+              Понятно, дальше <Icon name="ChevronRight" size={20} />
+            </button>
+          )}
         </div>
       )}
     </div>
+  );
+}
+
+// ㄱ + ㅏ = 가: the parts slide together into the result.
+function Equation({ eq }) {
+  const parts = eq.slice(0, -1);
+  const res = eq[eq.length - 1];
+  return (
+    <button type="button" className="eq" onClick={() => say(res)} aria-label={eq.join(" ")}>
+      {parts.map((x, i) => (
+        <span key={i} className="row" style={{ gap: 10 }}>
+          {i > 0 && <span className="eq-op">+</span>}
+          <span className="eq-part ko" style={{ animationDelay: `${i * 0.25}s` }}>{x}</span>
+        </span>
+      ))}
+      <span className="eq-op">=</span>
+      <span className="eq-res ko">{res}</span>
+    </button>
+  );
+}
+
+// A sentence with the word that changes in a dashed box and the ending in
+// colour: [저는] [알리나] [예요].
+function Pattern({ parts }) {
+  const full = parts.map((x) => x.t).join("");
+  return (
+    <button type="button" className="pattern" onClick={() => say(full)}>
+      {parts.map((x, i) => (
+        <span key={i} className={"pattern-part ko " + (x.c || "")}>
+          {x.t.trim()}
+          {x.ru && <small className="ru">{x.ru}</small>}
+        </span>
+      ))}
+    </button>
+  );
+}
+
+function Video({ id }) {
+  const [on, setOn] = useState(false);
+  return on ? (
+    <div className="video">
+      <iframe src={`https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1`} title="video" allow="encrypted-media; picture-in-picture" allowFullScreen />
+    </div>
+  ) : (
+    <button type="button" className="btn btn-ghost" style={{ alignSelf: "flex-start" }} onClick={() => setOn(true)}>
+      <Icon name="Play" size={20} /> Посмотреть видео
+    </button>
   );
 }
 
